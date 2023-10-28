@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ami Secret</title>
+  </head>
+  <body>
+
+    <form id="emailForm">
+      <label for="emails">Entrez les adresses emails (séparées par des virgules):</label>
+      <textarea id="emails" rows="4" cols="50"></textarea>
+      <br>
+      <button type="submit">Générer les liens mailto</button>
+    </form>
+
+    <div id="linksContainer"></div>
+
+    <script>
+      document.getElementById('emailForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Divisez le texte par espace ou retour à la ligne
+    const rawLines = e.target.emails.value.split(/\n/);
+    const rawEmails = rawLines.flatMap(line => line.split(/\s+/)).filter(email => email);
+
+    let shuffledEmails = [...rawEmails].sort(() => Math.random() - 0.5);
+
+    const linksContainer = document.getElementById('linksContainer');
+    linksContainer.innerHTML = '';
+
+    rawEmails.forEach((email, index) => {
+        const currentLine = rawLines.findIndex(line => line.includes(email));
+
+        let secretFriend = shuffledEmails.shift();
+
+        // S'assurer que l'email et l'ami secret ne sont pas identiques et ne sont pas sur la même ligne
+        while(secretFriend === email || rawLines[currentLine].includes(secretFriend)) {
+            shuffledEmails.push(secretFriend);
+            secretFriend = shuffledEmails.shift();
+        }
+
+        const brouilledData = btoa(unescape(encodeURIComponent(secretFriend)));
+        const subject = encodeURIComponent("Découvre ton ami secret");
+        const body = encodeURIComponent(`Clique sur le lien pour découvrir ton ami secret: ${location.href}?data=${brouilledData}`);
+        
+        const mailtoLink = document.createElement('a');
+        mailtoLink.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        mailtoLink.textContent = email;
+        mailtoLink.target = '_blank';
+        
+        const secretFriendDisplay = document.createElement('span');
+        secretFriendDisplay.textContent = ` (Ami secret: ${secretFriend})`;
+        
+        const entryDiv = document.createElement('div');
+        entryDiv.appendChild(mailtoLink);
+        entryDiv.appendChild(secretFriendDisplay);
+        linksContainer.appendChild(entryDiv);
+    });
+});
+
+
+
+      document.addEventListener('DOMContentLoaded', function() {
+              const urlParams = new URLSearchParams(window.location.search);
+              const brouilledData = urlParams.get('data');
+
+              if (brouilledData) {
+                      const debrouilledData = decodeURIComponent(escape(atob(brouilledData)));
+
+                      // Afficher l'email débrouillé
+                      document.body.innerHTML = `Ton ami secret est : ${debrouilledData}`;
+                    }
+            });
+
+    </script>
+
+  </body>
+</html>
