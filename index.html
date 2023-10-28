@@ -42,7 +42,8 @@
 
         const brouilledData = btoa(unescape(encodeURIComponent(secretFriend)));
         const subject = encodeURIComponent("Découvre ton ami secret");
-        const body = encodeURIComponent(`Clique sur le lien pour découvrir ton ami secret: ${location.href}?data=${brouilledData}`);
+        const body = encodeURIComponent(`Clique sur le lien pour découvrir ton ami secret: \n\n${location.href}?data=${brouilledData}\n\n Si le lien n'est pas cliquable, copie-le et colle-le dans la barre d'adresse de ton navigateur.`);
+
         
         const mailtoLink = document.createElement('a');
         mailtoLink.href = `mailto:${email}?subject=${subject}&body=${body}`;
@@ -50,7 +51,8 @@
         mailtoLink.target = '_blank';
         
         const secretFriendDisplay = document.createElement('span');
-        secretFriendDisplay.textContent = ` (Ami secret: ${secretFriend})`;
+        // secretFriendDisplay.textContent = ` (Ami secret: ${secretFriend})`;
+        secretFriendDisplay.textContent = ` (Ami secret: caché)`;
         
         const entryDiv = document.createElement('div');
         entryDiv.appendChild(mailtoLink);
